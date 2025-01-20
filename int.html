@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Upload or Capture Image</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      background-image: url('p2.jpeg'); /* Replace with your image URL */
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      color: white;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+    }
+
+    #container h1 {
+      text-align: left;
+      margin-top: 20px;
+    }
+
+    #container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin: auto;
+      margin-top: 200px;
+      background-color: rgba(0, 0, 0, 0.5);
+      padding: 20px;
+      border-radius: 10px;
+      width: 300px;
+    }
+
+    button {
+      padding: 10px 20px;
+      margin: 10px;
+      border: none;
+      border-radius: 5px;
+      background-color: #007bff;
+      color: white;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    #stopButton {
+      background-color: #dc3545;
+    }
+
+    #stopButton:hover {
+      background-color: #a71d2a;
+    }
+
+    video, img {
+      max-width: 100%;
+      display: block;
+      margin: 20px auto;
+      border: 2px solid white;
+      border-radius: 10px;
+    }
+
+    canvas {
+      display: none;
+    }
+
+    #downloadLink {
+      display: block;
+      margin-top: 10px;
+      text-decoration: none;
+      color: white;
+      background-color: #28a745;
+      padding: 10px 20px;
+      border-radius: 5px;
+      font-size: 16px;
+      transition: background-color 0.3s;
+    }
+
+    #downloadLink:hover {
+      background-color: #1c7430;
+    }
+  </style>
+</head>
+<body>
+  <div id="container">
+    <h1>Upload or Capture Image</h1>
+    <button id="uploadButton">Upload Image</button>
+    <input type="file" id="fileInput" accept="image/*" style="display: none;">
+    <button id="captureButton">Capture Image</button>
+    <button id="stopButton" style="display: none;">Stop Webcam</button>
+    <video id="video" autoplay playsinline style="display: none;"></video>
+    <canvas id="canvas"></canvas>
+    <img id="preview" alt="Selected Image" style="display: none;">
+    <a id="downloadLink" download="captured-image.png" style="display: none;">Download Captured Image</a>
+    <button id="submitButton" style="display: none;">Submit</button>
+  </div>
+
+  <script>
+    const uploadButton = document.getElementById('uploadButton');
+    const fileInput = document.getElementById('fileInput');
+    const captureButton = document.getElementById('captureButton');
+    const stopButton = document.getElementById('stopButton');
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('canvas');
+    const preview = document.getElementById('preview');
+    const downloadLink = document.getElementById('downloadLink');
+    const submitButton = document.getElementById('submitButton');
+
+    let stream = null;
+
+    // Show file input dialog when upload button is clicked
+    uploadButton.addEventListener('click', () => {
+      fileInput.click();
+    });
+
+    // Display uploaded image
+    fileInput.addEventListener('change', (event) => {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          preview.src = e.target.result;
+          preview.style.display = 'block';
+          video.style.display = 'none';
+          downloadLink.style.display = 'none';
+          stopButton.style.display = 'none';
+          submitButton.style.display = 'inline-block';
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    // Access webcam for capturing
+    captureButton.addEventListener('click', () => {
+      navigator.mediaDevices.getUserMedia({ video: true })
+        .then((streamObj) => {
+          stream = streamObj;
+          video.srcObject = stream;
+          video.style.display = 'block';
+          preview.style.display = 'none';
+          downloadLink.style.display = 'none';
+          stopButton.style.display = 'inline-block';
+          submitButton.style.display = 'none';
+        })
+        .catch((error) => {
+          console.error("Error accessing webcam:", error);
+          alert("Unable to access webcam.");
+        });
+    });
+
+    // Stop webcam stream
+    stopButton.addEventListener('click', () => {
+      if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+        video.style.display = 'none';
+        stopButton.style.display = 'none';
+      }
+    });
+
+    // Capture the image from the webcam
+    video.addEventListener('click', () => {
+      if (video.style.display === 'block') {
+        const context = canvas.getContext('2d');
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+        // Stop webcam stream
+        stream.getTracks().forEach(track => track.stop());
+        video.style.display = 'none';
+        stopButton.style.display = 'none';
+
+        // Show captured image and make it downloadable
+        const imageData = canvas.toDataURL('image/png');
+        preview.src = imageData;
+        preview.style.display = 'block';
+        downloadLink.href = imageData;
+        downloadLink.style.display = 'block';
+        downloadLink.textContent = 'Download Captured Image';
+        submitButton.style.display = 'inline-block';
+      }
+    });
+
+    // Handle submit button click
+    submitButton.addEventListener('click', () => {
+      const imageData = preview.src;
+      if (imageData) {
+        console.log("Image submitted successfully:", imageData);
+        alert("Image submitted successfully!");
+        // Add logic here to send the image data to the server if needed
+      } else {
+        alert("No image to submit.");
+      }
+    });
+  </script>
+</body>
+</html>
