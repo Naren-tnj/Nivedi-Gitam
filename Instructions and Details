@@ -1,0 +1,3 @@
+All the .html files are for frontend
+(lastone.py) is for example(it shows how to import a saved model and predict)
+(main.py) is the code that is responsible for taking a image from website, use model to predict the answer and send it back to website
