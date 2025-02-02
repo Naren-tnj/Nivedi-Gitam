@@ -1,0 +1,31 @@
+#Instructions to setup the webpage 
+
+1.Download the main.py file and save it anywhere
+2.Download the (1) file from saved_models folder (sent in whatsapp group via drive)
+3.copy the path of model (1) file in ur system, open the main.py file and update the model path there.
+4.Install nodejs
+   https://nodejs.org/en/download
+5.Install npm
+   open cmd and type "npm install -g npm"
+6.Download the whole frontend folder i have sent. Open cmd prompt, change your directory to frontend folder, and type "npm install --from-lock-json"
+7.After it downloads type "npm audit fix"
+8.Once its done, close the cmd prompt.
+
+#Running the Webpage
+
+1.Open visual studio, and run the main.py code
+2.open the frontend folder, right click in any empty space, and click open in terminal.
+3.Inside the terminal type the following 2 lines:
+  $env:NODE_OPTIONS="--openssl-legacy-provider"
+  npm run start
+This should open the webpage.
+
+#Re-opening the webpage after you close it once.
+
+1.open the frontend folder, right click in any empty space, and click open in terminal.
+2.Type the command -> netstat -ano | findstr :3000
+ It should show you an output with PID 12345 (12345 is an example)
+3.Type the command -> taskkill /PID 12345 /F (replace 12345 with whatever pid u get)
+4.Type the following lines:
+  $env:NODE_OPTIONS="--openssl-legacy-provider"
+  npm run start
