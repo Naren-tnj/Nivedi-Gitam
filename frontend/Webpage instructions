@@ -18,14 +18,14 @@
 3.Inside the terminal type the following 2 lines:
   $env:NODE_OPTIONS="--openssl-legacy-provider"
   npm run start
-This should open the webpage.
+This should open the webpage.If it says port is aldready being used , follow the re opening steps below.
 
 #Re-opening the webpage after you close it once.
 
 1.open the frontend folder, right click in any empty space, and click open in terminal.
 2.Type the command -> netstat -ano | findstr :3000
- It should show you an output with PID 12345 (12345 is an example)
-3.Type the command -> taskkill /PID 12345 /F (replace 12345 with whatever pid u get)
+ It should show you an output "  TCP    0.0.0.0:3000           0.0.0.0:0              LISTENING       8012"
+3.Type the command -> taskkill /PID 8012 /F (replace 8012 with whatever pid u get)
 4.Type the following lines:
   $env:NODE_OPTIONS="--openssl-legacy-provider"
   npm run start
